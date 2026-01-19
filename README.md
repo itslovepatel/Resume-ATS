@@ -1,8 +1,28 @@
-# ATS Resume Analyzer
+# 🎯 ATS Resume Analyzer
 
-A modern, AI-powered ATS (Applicant Tracking System) Resume Analyzer that helps job seekers understand how their resume performs in automated screening systems.
+A modern, AI-powered ATS (Applicant Tracking System) Resume Analyzer that helps job seekers understand how their resume performs in automated screening systems. **Supports 25+ industries** including Software, Healthcare, Finance, Legal, Education, and more!
 
 ![ATS Resume Analyzer](https://via.placeholder.com/800x400?text=ATS+Resume+Analyzer)
+
+## ✨ What It Does
+
+Upload your resume (PDF or DOCX) and get instant, comprehensive analysis:
+- See your ATS compatibility score (0-100)
+- Understand what's working and what needs improvement
+- Get AI-powered suggestions tailored to your industry
+- Download a detailed PDF report
+
+## 🏭 Supported Industries (25+)
+
+| Technology | Business | Healthcare | Other |
+|------------|----------|------------|-------|
+| Software / IT | Marketing | Healthcare / Medical | Legal |
+| Data Science / AI | Finance / Banking | Pharmaceutical / Biotech | Education |
+| Cybersecurity | Sales | | Real Estate |
+| Design / UX | Human Resources | | Hospitality |
+| | Operations / Supply Chain | | Retail / E-commerce |
+| | Consulting | | Government |
+| | Project Management | | Non-Profit |
 
 ## 🚀 Features
 
@@ -14,6 +34,7 @@ A modern, AI-powered ATS (Applicant Tracking System) Resume Analyzer that helps 
 - **Experience Analysis**: Evaluate work experience quality, action verbs usage, and metrics
 - **Issue Detection**: Identify formatting issues, missing sections, and ATS compatibility problems
 - **Smart Suggestions**: Get actionable recommendations to improve your ATS score
+- **PDF Report Download**: Download a professional PDF report of your analysis
 
 ## 🛠️ Tech Stack
 
