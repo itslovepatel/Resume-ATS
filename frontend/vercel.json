@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://resume-ats-backend.onrender.com/api/:path*"
+      "destination": "https://resume-ats-backend-xlo8.onrender.com/api/:path*"
     }
   ],
   "headers": [
