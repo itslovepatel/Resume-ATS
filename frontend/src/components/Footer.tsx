@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Github, Linkedin, Twitter } from 'lucide-react';
+import { FileText, Github, Linkedin, Twitter, Mail, Code } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -17,11 +17,22 @@ export default function Footer() {
                 ATS<span className="text-brand-400">Analyzer</span>
               </span>
             </div>
-            <p className="text-gray-400 max-w-md">
+            <p className="text-gray-400 max-w-md mb-4">
               Free AI-powered resume analyzer that helps job seekers understand
               how ATS systems read their resumes and provides actionable
               improvement insights.
             </p>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/itslovepatel"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+              >
+                <Github className="w-5 h-5" />
+                <span>Open Source on GitHub</span>
+              </a>
+            </div>
           </div>
 
           {/* Links */}
@@ -77,24 +88,30 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} ATS Resume Analyzer. All rights reserved.
+            © {new Date().getFullYear()} ATS Resume Analyzer. Built with ❤️ by{' '}
+            <a
+              href="https://github.com/itslovepatel"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-400 hover:text-brand-300 transition-colors"
+            >
+              Love Patel
+            </a>
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="#"
+              href="mailto:Lovepatelforwork@gmail.com"
               className="text-gray-500 hover:text-white transition-colors"
+              title="Email"
             >
-              <Twitter className="w-5 h-5" />
+              <Mail className="w-5 h-5" />
             </a>
             <a
-              href="#"
+              href="https://github.com/itslovepatel"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-gray-500 hover:text-white transition-colors"
-            >
-              <Linkedin className="w-5 h-5" />
-            </a>
-            <a
-              href="#"
-              className="text-gray-500 hover:text-white transition-colors"
+              title="GitHub"
             >
               <Github className="w-5 h-5" />
             </a>
