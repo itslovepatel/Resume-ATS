@@ -99,7 +99,7 @@ export default function ContactSection() {
                 <span>Lovepatelforwork@gmail.com</span>
               </a>
               <a
-                href="https://github.com/itslovepatel"
+                href="https://github.com/itslovepatel/Resume-ATS"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-700 hover:text-brand-600 transition-colors"
