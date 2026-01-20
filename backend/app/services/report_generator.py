@@ -3,115 +3,101 @@ Report Generator Service - Generates PDF reports from analysis results
 """
 from io import BytesIO
 from datetime import datetime
-import fitz  # PyMuPDF
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.colors import HexColor, black, white
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 
 
 class ReportGenerator:
     """Generate PDF reports from resume analysis"""
     
+    def __init__(self):
+        self.width, self.height = A4
+        self.margin = 50
+        
     def generate_pdf(self, analysis_data: dict) -> bytes:
         """Generate a PDF report from analysis data"""
-        doc = fitz.open()
+        buffer = BytesIO()
+        c = canvas.Canvas(buffer, pagesize=A4)
         
         # Page 1: Summary
-        page = doc.new_page(width=595, height=842)  # A4 size
+        self._draw_header(c, analysis_data)
+        self._draw_score_section(c, analysis_data)
+        self._draw_candidate_section(c, analysis_data)
+        self._draw_skills_section(c, analysis_data)
         
-        # Header
-        self._draw_header(page, analysis_data)
-        
-        # ATS Score Section
-        self._draw_score_section(page, analysis_data)
-        
-        # Candidate Info
-        self._draw_candidate_section(page, analysis_data)
-        
-        # Domain & Skills
-        self._draw_skills_section(page, analysis_data)
+        c.showPage()
         
         # Page 2: Issues & Suggestions
-        page2 = doc.new_page(width=595, height=842)
-        self._draw_issues_section(page2, analysis_data)
-        self._draw_suggestions_section(page2, analysis_data)
+        self._draw_issues_section(c, analysis_data)
+        self._draw_suggestions_section(c, analysis_data)
         
-        # Save to bytes
-        pdf_bytes = doc.tobytes()
-        doc.close()
+        c.save()
+        
+        pdf_bytes = buffer.getvalue()
+        buffer.close()
         
         return pdf_bytes
     
-    def _draw_header(self, page, data):
+    def _draw_header(self, c, data):
         """Draw report header"""
         # Title
-        page.insert_text(
-            (50, 50),
-            "ATS Resume Analysis Report",
-            fontsize=24,
-            fontname="helv",
-            color=(0.15, 0.3, 0.9)
-        )
+        c.setFont("Helvetica-Bold", 24)
+        c.setFillColor(HexColor('#2563EB'))
+        c.drawString(self.margin, self.height - 50, "ATS Resume Analysis Report")
         
         # Date
-        page.insert_text(
-            (50, 75),
-            f"Generated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}",
-            fontsize=10,
-            fontname="helv",
-            color=(0.5, 0.5, 0.5)
-        )
+        c.setFont("Helvetica", 10)
+        c.setFillColor(HexColor('#6B7280'))
+        c.drawString(self.margin, self.height - 75, 
+                    f"Generated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}")
         
         # Line separator
-        page.draw_line((50, 85), (545, 85), color=(0.8, 0.8, 0.8), width=1)
+        c.setStrokeColor(HexColor('#E5E7EB'))
+        c.line(self.margin, self.height - 85, self.width - self.margin, self.height - 85)
     
-    def _draw_score_section(self, page, data):
+    def _draw_score_section(self, c, data):
         """Draw ATS score section"""
         score = data.get('ats_score', 0)
         category = data.get('score_category', 'Unknown')
         
-        # Score box
-        y_start = 110
+        y_start = self.height - 110
         
-        # Background rectangle for score
+        # Score box color
         if score >= 80:
-            color = (0.13, 0.77, 0.37)  # Green
+            color = HexColor('#22C55E')  # Green
         elif score >= 60:
-            color = (0.96, 0.62, 0.04)  # Orange
+            color = HexColor('#F59E0B')  # Orange
         else:
-            color = (0.94, 0.27, 0.27)  # Red
+            color = HexColor('#EF4444')  # Red
         
-        page.draw_rect(fitz.Rect(50, y_start, 150, y_start + 80), color=color, fill=color)
+        # Draw score box
+        c.setFillColor(color)
+        c.rect(self.margin, y_start - 80, 100, 80, fill=1, stroke=0)
         
         # Score number
-        page.insert_text(
-            (70, y_start + 50),
-            str(score),
-            fontsize=36,
-            fontname="helv",
-            color=(1, 1, 1)
-        )
-        page.insert_text(
-            (115, y_start + 50),
-            "/100",
-            fontsize=14,
-            fontname="helv",
-            color=(1, 1, 1)
-        )
+        c.setFillColor(white)
+        c.setFont("Helvetica-Bold", 36)
+        c.drawString(self.margin + 15, y_start - 55, str(score))
+        c.setFont("Helvetica", 14)
+        c.drawString(self.margin + 60, y_start - 55, "/100")
         
         # Category label
-        page.insert_text(
-            (70, y_start + 70),
-            category,
-            fontsize=10,
-            fontname="helv",
-            color=(1, 1, 1)
-        )
+        c.setFont("Helvetica", 10)
+        c.drawString(self.margin + 15, y_start - 72, category)
         
         # Score breakdown
         breakdown = data.get('score_breakdown', {})
-        x_start = 170
-        y_pos = y_start + 15
+        x_start = self.margin + 120
         
-        page.insert_text((x_start, y_pos), "Score Breakdown:", fontsize=12, fontname="helv", color=(0.2, 0.2, 0.2))
-        y_pos += 20
+        c.setFillColor(HexColor('#1F2937'))
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(x_start, y_start - 15, "Score Breakdown:")
+        
+        y_pos = y_start - 32
+        c.setFont("Helvetica", 9)
+        c.setFillColor(HexColor('#4B5563'))
         
         breakdown_items = [
             ('Keyword Relevance', breakdown.get('keyword_relevance', 0)),
@@ -123,46 +109,59 @@ class ReportGenerator:
         ]
         
         for label, value in breakdown_items:
-            page.insert_text((x_start, y_pos), f"• {label}: {value}/100", fontsize=9, fontname="helv", color=(0.3, 0.3, 0.3))
-            y_pos += 12
+            c.drawString(x_start, y_pos, f"• {label}: {value}/100")
+            y_pos -= 12
     
-    def _draw_candidate_section(self, page, data):
+    def _draw_candidate_section(self, c, data):
         """Draw candidate information section"""
         candidate = data.get('candidate', {})
-        y_start = 210
+        y_start = self.height - 220
         
-        page.insert_text((50, y_start), "Candidate Information", fontsize=14, fontname="helv", color=(0.2, 0.2, 0.2))
-        page.draw_line((50, y_start + 5), (200, y_start + 5), color=(0.15, 0.3, 0.9), width=2)
+        c.setFillColor(HexColor('#1F2937'))
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(self.margin, y_start, "Candidate Information")
         
-        y_pos = y_start + 25
+        c.setStrokeColor(HexColor('#2563EB'))
+        c.setLineWidth(2)
+        c.line(self.margin, y_start - 5, self.margin + 150, y_start - 5)
+        
+        y_pos = y_start - 25
+        c.setFont("Helvetica", 10)
+        c.setFillColor(HexColor('#4B5563'))
         
         if candidate.get('name'):
-            page.insert_text((50, y_pos), f"Name: {candidate['name']}", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
-            y_pos += 15
+            c.drawString(self.margin, y_pos, f"Name: {candidate['name']}")
+            y_pos -= 15
         if candidate.get('email'):
-            page.insert_text((50, y_pos), f"Email: {candidate['email']}", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
-            y_pos += 15
+            c.drawString(self.margin, y_pos, f"Email: {candidate['email']}")
+            y_pos -= 15
         if candidate.get('phone'):
-            page.insert_text((50, y_pos), f"Phone: {candidate['phone']}", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
-            y_pos += 15
+            c.drawString(self.margin, y_pos, f"Phone: {candidate['phone']}")
+            y_pos -= 15
         if candidate.get('location'):
-            page.insert_text((50, y_pos), f"Location: {candidate['location']}", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
-            y_pos += 15
+            c.drawString(self.margin, y_pos, f"Location: {candidate['location']}")
+            y_pos -= 15
         
         # Domain
         domain = data.get('domain', {})
-        y_pos += 10
-        page.insert_text((50, y_pos), f"Detected Domain: {domain.get('primary', 'Unknown')} ({int(domain.get('confidence', 0) * 100)}% confidence)", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
+        y_pos -= 10
+        c.drawString(self.margin, y_pos, 
+                    f"Detected Domain: {domain.get('primary', 'Unknown')} ({int(domain.get('confidence', 0) * 100)}% confidence)")
     
-    def _draw_skills_section(self, page, data):
+    def _draw_skills_section(self, c, data):
         """Draw skills section"""
         skills = data.get('skills', {})
-        y_start = 330
+        y_start = self.height - 350
         
-        page.insert_text((50, y_start), "Skills Detected", fontsize=14, fontname="helv", color=(0.2, 0.2, 0.2))
-        page.draw_line((50, y_start + 5), (150, y_start + 5), color=(0.15, 0.3, 0.9), width=2)
+        c.setFillColor(HexColor('#1F2937'))
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(self.margin, y_start, "Skills Detected")
         
-        y_pos = y_start + 25
+        c.setStrokeColor(HexColor('#2563EB'))
+        c.setLineWidth(2)
+        c.line(self.margin, y_start - 5, self.margin + 100, y_start - 5)
+        
+        y_pos = y_start - 25
         
         skill_categories = [
             ('Programming Languages', skills.get('programming_languages', [])),
@@ -177,116 +176,150 @@ class ReportGenerator:
                 skills_text = ', '.join(skill_list[:8])
                 if len(skill_list) > 8:
                     skills_text += f" (+{len(skill_list) - 8} more)"
-                page.insert_text((50, y_pos), f"{category}:", fontsize=10, fontname="helv", color=(0.2, 0.2, 0.2))
-                y_pos += 12
-                page.insert_text((60, y_pos), skills_text, fontsize=9, fontname="helv", color=(0.4, 0.4, 0.4))
-                y_pos += 18
+                c.setFont("Helvetica-Bold", 10)
+                c.setFillColor(HexColor('#1F2937'))
+                c.drawString(self.margin, y_pos, f"{category}:")
+                y_pos -= 12
+                c.setFont("Helvetica", 9)
+                c.setFillColor(HexColor('#6B7280'))
+                c.drawString(self.margin + 10, y_pos, skills_text)
+                y_pos -= 18
         
         # Experience summary
         experience = data.get('experience', {})
-        y_pos += 10
-        page.insert_text((50, y_pos), "Experience Summary", fontsize=14, fontname="helv", color=(0.2, 0.2, 0.2))
-        page.draw_line((50, y_pos + 5), (180, y_pos + 5), color=(0.15, 0.3, 0.9), width=2)
-        y_pos += 25
+        y_pos -= 10
+        c.setFillColor(HexColor('#1F2937'))
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(self.margin, y_pos, "Experience Summary")
+        
+        c.setStrokeColor(HexColor('#2563EB'))
+        c.line(self.margin, y_pos - 5, self.margin + 130, y_pos - 5)
+        y_pos -= 25
         
         total_years = experience.get('total_years', 0)
         positions = experience.get('positions', [])
         quality = experience.get('overall_quality', 0)
         
-        page.insert_text((50, y_pos), f"Total Experience: {total_years} years", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
-        y_pos += 15
-        page.insert_text((50, y_pos), f"Positions Found: {len(positions)}", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
-        y_pos += 15
-        page.insert_text((50, y_pos), f"Content Quality Score: {quality}/100", fontsize=10, fontname="helv", color=(0.3, 0.3, 0.3))
+        c.setFont("Helvetica", 10)
+        c.setFillColor(HexColor('#4B5563'))
+        c.drawString(self.margin, y_pos, f"Total Experience: {total_years} years")
+        y_pos -= 15
+        c.drawString(self.margin, y_pos, f"Positions Found: {len(positions)}")
+        y_pos -= 15
+        c.drawString(self.margin, y_pos, f"Content Quality Score: {quality}/100")
         
         # Keywords
         keywords = data.get('keywords_analysis', {})
-        y_pos += 30
-        page.insert_text((50, y_pos), "Keywords Analysis", fontsize=14, fontname="helv", color=(0.2, 0.2, 0.2))
-        page.draw_line((50, y_pos + 5), (170, y_pos + 5), color=(0.15, 0.3, 0.9), width=2)
-        y_pos += 25
+        y_pos -= 30
+        c.setFillColor(HexColor('#1F2937'))
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(self.margin, y_pos, "Keywords Analysis")
+        
+        c.setStrokeColor(HexColor('#2563EB'))
+        c.line(self.margin, y_pos - 5, self.margin + 120, y_pos - 5)
+        y_pos -= 25
         
         found = keywords.get('found', [])
         missing = keywords.get('missing', [])
         
-        page.insert_text((50, y_pos), f"✓ Found ({len(found)}): {', '.join(found[:6])}", fontsize=9, fontname="helv", color=(0.13, 0.55, 0.13))
-        y_pos += 15
-        page.insert_text((50, y_pos), f"✗ Missing ({len(missing)}): {', '.join(missing[:6])}", fontsize=9, fontname="helv", color=(0.8, 0.2, 0.2))
+        c.setFont("Helvetica", 9)
+        c.setFillColor(HexColor('#16A34A'))
+        c.drawString(self.margin, y_pos, f"Found ({len(found)}): {', '.join(found[:6])}")
+        y_pos -= 15
+        c.setFillColor(HexColor('#DC2626'))
+        c.drawString(self.margin, y_pos, f"Missing ({len(missing)}): {', '.join(missing[:6])}")
     
-    def _draw_issues_section(self, page2, data):
+    def _draw_issues_section(self, c, data):
         """Draw issues section on page 2"""
         issues = data.get('issues', [])
         
         # Header
-        page2.insert_text((50, 50), "ATS Issues Detected", fontsize=18, fontname="helv", color=(0.8, 0.2, 0.2))
-        page2.draw_line((50, 60), (545, 60), color=(0.8, 0.8, 0.8), width=1)
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColor(HexColor('#DC2626'))
+        c.drawString(self.margin, self.height - 50, "ATS Issues Detected")
         
-        y_pos = 85
+        c.setStrokeColor(HexColor('#E5E7EB'))
+        c.line(self.margin, self.height - 60, self.width - self.margin, self.height - 60)
+        
+        y_pos = self.height - 85
         
         if not issues:
-            page2.insert_text((50, y_pos), "✓ No major issues detected! Your resume is ATS-friendly.", fontsize=11, fontname="helv", color=(0.13, 0.55, 0.13))
-            return 120
+            c.setFont("Helvetica", 11)
+            c.setFillColor(HexColor('#16A34A'))
+            c.drawString(self.margin, y_pos, "No major issues detected! Your resume is ATS-friendly.")
+            return
         
         for issue in issues[:8]:
             severity = issue.get('severity', 'Medium')
             if severity == 'High':
-                color = (0.8, 0.2, 0.2)
-                marker = "●"
+                c.setFillColor(HexColor('#DC2626'))
             elif severity == 'Medium':
-                color = (0.85, 0.55, 0.0)
-                marker = "●"
+                c.setFillColor(HexColor('#D97706'))
             else:
-                color = (0.4, 0.4, 0.4)
-                marker = "○"
+                c.setFillColor(HexColor('#6B7280'))
             
-            page2.insert_text((50, y_pos), f"{marker} [{severity}] {issue.get('description', '')}", fontsize=10, fontname="helv", color=color)
-            y_pos += 14
+            c.setFont("Helvetica-Bold", 10)
+            desc = issue.get('description', '')[:70]
+            c.drawString(self.margin, y_pos, f"[{severity}] {desc}")
+            y_pos -= 14
             
-            # Suggestion in lighter color
+            # Suggestion
             suggestion = issue.get('suggestion', '')
-            if suggestion and len(suggestion) > 80:
+            if len(suggestion) > 80:
                 suggestion = suggestion[:77] + "..."
-            page2.insert_text((65, y_pos), f"→ {suggestion}", fontsize=8, fontname="helv", color=(0.5, 0.5, 0.5))
-            y_pos += 20
-        
-        return y_pos
+            c.setFont("Helvetica", 8)
+            c.setFillColor(HexColor('#6B7280'))
+            c.drawString(self.margin + 15, y_pos, f"-> {suggestion}")
+            y_pos -= 20
     
-    def _draw_suggestions_section(self, page2, data):
+    def _draw_suggestions_section(self, c, data):
         """Draw suggestions section"""
         suggestions = data.get('suggestions', [])
         
-        y_start = 380
-        page2.insert_text((50, y_start), "Improvement Suggestions", fontsize=18, fontname="helv", color=(0.15, 0.3, 0.9))
-        page2.draw_line((50, y_start + 10), (545, y_start + 10), color=(0.8, 0.8, 0.8), width=1)
+        y_start = self.height - 400
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColor(HexColor('#2563EB'))
+        c.drawString(self.margin, y_start, "Improvement Suggestions")
         
-        y_pos = y_start + 35
+        c.setStrokeColor(HexColor('#E5E7EB'))
+        c.line(self.margin, y_start - 10, self.width - self.margin, y_start - 10)
+        
+        y_pos = y_start - 35
         
         if not suggestions:
-            page2.insert_text((50, y_pos), "✓ Your resume is well-optimized! No major improvements needed.", fontsize=11, fontname="helv", color=(0.13, 0.55, 0.13))
+            c.setFont("Helvetica", 11)
+            c.setFillColor(HexColor('#16A34A'))
+            c.drawString(self.margin, y_pos, "Your resume is well-optimized! No major improvements needed.")
             return
         
         for i, suggestion in enumerate(suggestions[:6], 1):
             category = suggestion.get('category', '')
             title = suggestion.get('title', '')
             
-            page2.insert_text((50, y_pos), f"{i}. [{category}] {title}", fontsize=10, fontname="helv", color=(0.2, 0.2, 0.2))
-            y_pos += 14
+            c.setFont("Helvetica-Bold", 10)
+            c.setFillColor(HexColor('#1F2937'))
+            c.drawString(self.margin, y_pos, f"{i}. [{category}] {title}")
+            y_pos -= 14
             
             description = suggestion.get('description', '')
             if len(description) > 90:
                 description = description[:87] + "..."
-            page2.insert_text((65, y_pos), description, fontsize=8, fontname="helv", color=(0.5, 0.5, 0.5))
-            y_pos += 12
+            c.setFont("Helvetica", 8)
+            c.setFillColor(HexColor('#6B7280'))
+            c.drawString(self.margin + 15, y_pos, description)
+            y_pos -= 12
             
             # Examples
             examples = suggestion.get('examples', [])[:2]
             for example in examples:
                 if len(example) > 70:
                     example = example[:67] + "..."
-                page2.insert_text((75, y_pos), f"• {example}", fontsize=8, fontname="helv", color=(0.4, 0.4, 0.4))
-                y_pos += 11
+                c.drawString(self.margin + 25, y_pos, f"- {example}")
+                y_pos -= 11
             
-            y_pos += 8
+            y_pos -= 8
         
         # Footer
-        page2.insert_text((50, 800), "Generated by ATS Resume Analyzer | www.atsanalyzer.com", fontsize=8, fontname="helv", color=(0.6, 0.6, 0.6))
+        c.setFont("Helvetica", 8)
+        c.setFillColor(HexColor('#9CA3AF'))
+        c.drawString(self.margin, 30, "Generated by ATS Resume Analyzer | www.atsanalyzer.com")

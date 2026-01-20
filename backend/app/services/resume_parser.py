@@ -2,7 +2,7 @@
 Resume Parser Service - Extracts text and structured data from PDF/DOCX
 """
 import re
-import fitz  # PyMuPDF
+from pypdf import PdfReader
 from docx import Document
 from typing import Dict, List, Any, Optional
 from app.models.schemas import CandidateInfo, Project, Experience, ExperienceSummary, Education
@@ -77,13 +77,14 @@ class ResumeParser:
         }
     
     def _extract_pdf_text(self, file_path: str) -> str:
-        """Extract text from PDF using PyMuPDF"""
+        """Extract text from PDF using pypdf"""
         text = ""
         try:
-            doc = fitz.open(file_path)
-            for page in doc:
-                text += page.get_text()
-            doc.close()
+            reader = PdfReader(file_path)
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
         except Exception as e:
             raise Exception(f"Error parsing PDF: {str(e)}")
         return text
@@ -107,14 +108,20 @@ class ResumeParser:
     
     def _check_pdf_tables(self, file_path: str) -> bool:
         """Check if PDF contains tables (potential ATS issue)"""
+        # pypdf doesn't have built-in table detection
+        # We'll use a heuristic: check for table-like patterns in text
         try:
-            doc = fitz.open(file_path)
-            for page in doc:
-                tables = page.find_tables()
-                if tables and len(tables.tables) > 0:
-                    doc.close()
+            reader = PdfReader(file_path)
+            for page in reader.pages:
+                text = page.extract_text() or ""
+                # Look for table-like patterns (multiple tabs or consistent spacing)
+                lines = text.split('\n')
+                table_like_lines = 0
+                for line in lines:
+                    if line.count('\t') >= 2 or line.count('|') >= 2:
+                        table_like_lines += 1
+                if table_like_lines > 3:
                     return True
-            doc.close()
         except:
             pass
         return False
@@ -122,13 +129,14 @@ class ResumeParser:
     def _check_pdf_images(self, file_path: str) -> bool:
         """Check if PDF contains images"""
         try:
-            doc = fitz.open(file_path)
-            for page in doc:
-                images = page.get_images()
-                if images:
-                    doc.close()
-                    return True
-            doc.close()
+            reader = PdfReader(file_path)
+            for page in reader.pages:
+                if '/XObject' in page.get('/Resources', {}):
+                    xobject = page['/Resources']['/XObject']
+                    if xobject:
+                        for obj in xobject:
+                            if xobject[obj]['/Subtype'] == '/Image':
+                                return True
         except:
             pass
         return False
