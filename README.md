@@ -36,6 +36,17 @@ Upload your resume (PDF or DOCX) and get instant, comprehensive analysis:
 - **Smart Suggestions**: Get actionable recommendations to improve your ATS score
 - **PDF Report Download**: Download a professional PDF report of your analysis
 
+## 🖨️ Local OCR Fallback (Scanned Resumes)
+
+Resume-ATS now includes a fully local OCR fallback to handle scanned or image-based PDFs. Key points:
+
+- The backend attempts standard PDF text extraction first (PyPDF). OCR runs only when extraction quality is poor (heuristics: text length < 800 chars, word count < 150, missing email or phone).
+- OCR uses Tesseract via `pytesseract` and `pdf2image` to convert pages at 300 DPI and preprocess images (grayscale, contrast, sharpening) before OCR.
+- Safety controls: max 5 OCR pages, 15s OCR timeout, never OCR DOCX, never store OCR images, never overwrite original PDFs.
+- API responses include `parsing_method` ("standard" | "ocr" | "ocr_unavailable") and `ocr_confidence` ("low" | "medium" | "high").
+
+This makes Resume-ATS more robust for scanned resumes while keeping all processing local—no cloud OCR, no external APIs.
+
 ## 🛠️ Tech Stack
 
 ### Frontend

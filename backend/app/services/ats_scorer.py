@@ -54,9 +54,24 @@ class ATSScorer:
         self, 
         parsed_data: Dict, 
         skills: SkillsData, 
-        domain: DomainInfo
+        domain: DomainInfo,
+        parsing_method: str = "standard",
+        ocr_confidence: str = None
     ) -> Dict[str, Any]:
-        """Calculate comprehensive ATS score"""
+        """Calculate comprehensive ATS score
+        
+        Args:
+            parsed_data: Parsed resume data
+            skills: Extracted skills
+            domain: Classified domain
+            parsing_method: "standard" | "ocr" | "ocr_unavailable"
+            ocr_confidence: "low" | "medium" | "high" (only when OCR used)
+        """
+        
+        # OCR adjustment factors (reduce strictness for OCR text)
+        is_ocr = parsing_method == "ocr"
+        ocr_penalty_reduction = 0.7 if is_ocr else 1.0  # Reduce penalties by 30% for OCR
+        ocr_min_score_floor = 25 if is_ocr else 0  # Minimum score floor for OCR
         
         raw_text = parsed_data.get('raw_text', '')
         sections = parsed_data.get('sections', {})
@@ -68,7 +83,9 @@ class ATSScorer:
         # Calculate individual scores
         keyword_score = self._calculate_keyword_score(raw_text, domain.primary)
         section_score = self._calculate_section_score(sections, candidate)
-        formatting_score = self._calculate_formatting_score(formatting, raw_text)
+        formatting_score = self._calculate_formatting_score(
+            formatting, raw_text, is_ocr=is_ocr, penalty_factor=ocr_penalty_reduction
+        )
         skill_score = self._calculate_skill_score(skills)
         experience_score = self._calculate_experience_score(experience)
         project_score = self._calculate_project_score(projects)
@@ -102,6 +119,10 @@ class ATSScorer:
             project_score * weights['project_impact']
         )
         
+        # Apply OCR minimum score floor
+        if is_ocr and final_score < ocr_min_score_floor:
+            final_score = ocr_min_score_floor
+        
         # Determine category
         category = self._get_score_category(final_score)
         
@@ -110,6 +131,16 @@ class ATSScorer:
             raw_text, sections, formatting, 
             skills, candidate, experience
         )
+        
+        # Add OCR notice if applicable
+        if is_ocr:
+            ocr_notice = ATSIssue(
+                type='parsing',
+                severity='Low',
+                description=f'Resume was processed using OCR (scanned document detected). Confidence: {ocr_confidence or "unknown"}.',
+                suggestion='For best results, upload a text-based PDF or DOCX file rather than a scanned document.'
+            )
+            issues.insert(0, ocr_notice)
         
         # Generate suggestions
         suggestions = self._generate_suggestions(
@@ -172,37 +203,56 @@ class ATSScorer:
         
         return min(100, score)
     
-    def _calculate_formatting_score(self, formatting: Dict, text: str) -> int:
-        """Score based on formatting quality"""
+    def _calculate_formatting_score(
+        self, 
+        formatting: Dict, 
+        text: str,
+        is_ocr: bool = False,
+        penalty_factor: float = 1.0
+    ) -> int:
+        """Score based on formatting quality
+        
+        Args:
+            formatting: Formatting metadata
+            text: Raw resume text
+            is_ocr: Whether text was extracted via OCR
+            penalty_factor: Multiplier for penalties (reduced for OCR)
+        """
         score = 100
         
-        # Penalize for tables
+        # Penalize for tables (reduced for OCR since detection may be inaccurate)
         if formatting.get('has_tables'):
-            score -= 15
+            score -= int(15 * penalty_factor)
         
-        # Penalize for images
+        # Penalize for images (reduced for OCR)
         if formatting.get('has_images'):
-            score -= 10
+            score -= int(10 * penalty_factor)
         
         # Check word count (too short or too long)
+        # More lenient for OCR since extraction may miss some text
         word_count = formatting.get('word_count', len(text.split()))
-        if word_count < 200:
-            score -= 20
+        min_words = 150 if is_ocr else 200
+        if word_count < min_words:
+            score -= int(20 * penalty_factor)
         elif word_count > 1500:
-            score -= 10
+            score -= int(10 * penalty_factor)
         
         # Check for good structure (bullet points)
+        # More lenient for OCR since bullet detection may fail
         bullet_count = text.count('•') + text.count('●') + text.count('-')
-        if bullet_count < 5:
-            score -= 10
+        min_bullets = 3 if is_ocr else 5
+        if bullet_count < min_bullets:
+            score -= int(10 * penalty_factor)
         elif bullet_count > 50:
-            score -= 5
+            score -= int(5 * penalty_factor)
         
         # Check for special characters that might cause issues
-        special_chars = ['→', '★', '☆', '✓', '✔', '✗', '❖', '◆']
-        for char in special_chars:
-            if char in text:
-                score -= 3
+        # Skip this check for OCR since it introduces artifacts
+        if not is_ocr:
+            special_chars = ['→', '★', '☆', '✓', '✔', '✗', '❖', '◆']
+            for char in special_chars:
+                if char in text:
+                    score -= 3
         
         return max(0, min(100, score))
     

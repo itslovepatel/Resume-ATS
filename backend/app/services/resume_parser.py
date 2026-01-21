@@ -6,10 +6,16 @@ from pypdf import PdfReader
 from docx import Document
 from typing import Dict, List, Any, Optional
 from app.models.schemas import CandidateInfo, Project, Experience, ExperienceSummary, Education
+from app.services.ocr_service import ocr_service
 
 
 class ResumeParser:
     """Parse resumes and extract structured information"""
+    
+    # Parsing method constants
+    PARSING_STANDARD = "standard"
+    PARSING_OCR = "ocr"
+    PARSING_OCR_UNAVAILABLE = "ocr_unavailable"
     
     # Regex patterns
     EMAIL_PATTERN = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
@@ -41,13 +47,23 @@ class ResumeParser:
     ]
     
     def parse(self, file_path: str, file_ext: str) -> Dict[str, Any]:
-        """Main parsing method"""
+        """Main parsing method with OCR fallback for scanned PDFs"""
+        # Initialize parsing metadata
+        parsing_method = self.PARSING_STANDARD
+        ocr_confidence = None
+        
         # Extract raw text
         if file_ext == '.pdf':
             raw_text = self._extract_pdf_text(file_path)
             has_tables = self._check_pdf_tables(file_path)
             has_images = self._check_pdf_images(file_path)
+            
+            # Check if we need OCR fallback (only for PDFs)
+            raw_text, parsing_method, ocr_confidence = self._apply_ocr_if_needed(
+                file_path, raw_text
+            )
         else:
+            # DOCX files are always text-based, never OCR
             raw_text = self._extract_docx_text(file_path)
             has_tables = self._check_docx_tables(file_path)
             has_images = self._check_docx_images(file_path)
@@ -73,8 +89,67 @@ class ResumeParser:
                 "has_images": has_images,
                 "word_count": len(raw_text.split()),
                 "line_count": len(raw_text.split('\n'))
-            }
+            },
+            "parsing_method": parsing_method,
+            "ocr_confidence": ocr_confidence
         }
+    
+    def _apply_ocr_if_needed(
+        self, 
+        file_path: str, 
+        standard_text: str
+    ) -> tuple:
+        """
+        Apply OCR fallback if standard extraction is insufficient
+        
+        Decision Logic:
+        - Text length < 800 characters → OCR
+        - Word count < 150 → OCR
+        - No email found → OCR
+        - No phone found → OCR
+        
+        Never merges OCR + standard text.
+        
+        Args:
+            file_path: Path to PDF file
+            standard_text: Text extracted via pypdf
+            
+        Returns:
+            Tuple of (text, parsing_method, ocr_confidence)
+        """
+        # Check if OCR service is available
+        if not ocr_service.is_available():
+            return standard_text, self.PARSING_STANDARD, None
+        
+        # Quick check for email and phone in standard text
+        email_match = re.search(self.EMAIL_PATTERN, standard_text)
+        phone_match = re.search(self.PHONE_PATTERN, standard_text)
+        
+        # Determine if OCR is needed
+        if not ocr_service.needs_ocr(
+            standard_text, 
+            email=email_match.group() if email_match else None,
+            phone=phone_match.group() if phone_match else None
+        ):
+            # Standard extraction is good enough
+            return standard_text, self.PARSING_STANDARD, None
+        
+        # Check if PDF is too large for OCR
+        if ocr_service.should_skip_ocr(file_path):
+            # PDF has too many pages, skip OCR
+            return standard_text, self.PARSING_OCR_UNAVAILABLE, None
+        
+        # Attempt OCR extraction
+        ocr_text, parsing_method, confidence = ocr_service.extract_text_with_ocr(
+            file_path
+        )
+        
+        if ocr_text and parsing_method == self.PARSING_OCR:
+            # OCR succeeded - replace standard text entirely
+            return ocr_text, parsing_method, confidence
+        else:
+            # OCR failed or unavailable - fall back to standard
+            return standard_text, parsing_method, confidence
     
     def _extract_pdf_text(self, file_path: str) -> str:
         """Extract text from PDF using pypdf"""

@@ -8,3 +8,7 @@ aiofiles==23.2.1
 httpx==0.26.0
 reportlab==4.1.0
 
+# OCR dependencies for scanned PDF support
+pytesseract==0.3.10
+pdf2image==1.17.0
+Pillow>=10.0.0

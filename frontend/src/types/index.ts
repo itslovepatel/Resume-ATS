@@ -107,4 +107,7 @@ export interface AnalysisResult {
   issues: ATSIssue[];
   suggestions: Suggestion[];
   keywords_analysis: KeywordsAnalysis;
+  // OCR metadata
+  parsing_method: 'standard' | 'ocr' | 'ocr_unavailable';
+  ocr_confidence: 'low' | 'medium' | 'high' | null;
 }

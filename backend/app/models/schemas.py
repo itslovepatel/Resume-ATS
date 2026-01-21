@@ -114,3 +114,6 @@ class AnalysisResponse(BaseModel):
     issues: List[ATSIssue] = []
     suggestions: List[Suggestion] = []
     keywords_analysis: KeywordsAnalysis
+    # OCR metadata
+    parsing_method: str = "standard"  # "standard" | "ocr" | "ocr_unavailable"
+    ocr_confidence: Optional[str] = None  # "low" | "medium" | "high" (only when OCR used)

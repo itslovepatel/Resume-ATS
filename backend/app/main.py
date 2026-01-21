@@ -83,14 +83,24 @@ async def analyze_resume(file: UploadFile = File(...)):
         # Parse resume
         parsed_data = resume_parser.parse(tmp_path, file_ext)
         
+        # Get OCR metadata
+        parsing_method = parsed_data.get("parsing_method", "standard")
+        ocr_confidence = parsed_data.get("ocr_confidence")
+        
         # Extract skills
         skills_data = skill_extractor.extract(parsed_data["raw_text"])
         
         # Classify domain
         domain_data = domain_classifier.classify(parsed_data["raw_text"], skills_data)
         
-        # Calculate ATS score
-        ats_analysis = ats_scorer.calculate_score(parsed_data, skills_data, domain_data)
+        # Calculate ATS score (OCR-aware)
+        ats_analysis = ats_scorer.calculate_score(
+            parsed_data, 
+            skills_data, 
+            domain_data,
+            parsing_method=parsing_method,
+            ocr_confidence=ocr_confidence
+        )
         
         # Cleanup temporary file
         os.unlink(tmp_path)
@@ -109,7 +119,10 @@ async def analyze_resume(file: UploadFile = File(...)):
             education=parsed_data["education"],
             issues=ats_analysis["issues"],
             suggestions=ats_analysis["suggestions"],
-            keywords_analysis=ats_analysis["keywords_analysis"]
+            keywords_analysis=ats_analysis["keywords_analysis"],
+            # OCR metadata
+            parsing_method=parsing_method,
+            ocr_confidence=ocr_confidence
         )
         
         return response

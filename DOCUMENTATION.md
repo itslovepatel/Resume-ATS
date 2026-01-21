@@ -543,6 +543,52 @@ SECTION_HEADERS = {
 
 The parser looks for these headers to identify sections.
 
+### 5.3.1 OCR Fallback System (`ocr_service.py`)
+
+For scanned or image-based PDFs, the standard text extraction may fail. The OCR fallback system automatically detects these cases and uses Tesseract OCR to extract text.
+
+**When OCR is triggered:**
+```python
+def needs_ocr(text: str, email: str, phone: str) -> bool:
+    """OCR is triggered if ANY of the following is true:"""
+    # Text length < 800 characters
+    # Word count < 150
+    # No email found
+    # No phone found
+```
+
+**OCR Pipeline:**
+1. Convert PDF pages to images at 300 DPI
+2. Preprocess each image:
+   - Convert to grayscale
+   - Increase contrast
+   - Apply sharpening
+   - Resize if needed
+3. Run Tesseract OCR on each page
+4. Clean the output (remove duplicates, page numbers, headers/footers)
+5. Calculate confidence level
+
+**Safety Controls:**
+- Maximum 5 pages OCR'd (prevents server overload)
+- 15-second timeout (prevents hanging)
+- Never OCR DOCX files (always text-based)
+- Never store OCR images (privacy)
+- Original PDF is always preserved
+
+**Response includes:**
+```python
+{
+    "parsing_method": "standard" | "ocr" | "ocr_unavailable",
+    "ocr_confidence": "low" | "medium" | "high"  # Only when OCR used
+}
+```
+
+**Render Deployment:**
+The `render.yaml` installs required system packages:
+- `tesseract-ocr` - The OCR engine
+- `poppler-utils` - For PDF to image conversion
+- `libgl1`, `libglib2.0-0` - Required dependencies
+
 ### 5.4 Skill Extractor (`skill_extractor.py`)
 
 This service identifies skills mentioned in the resume.
