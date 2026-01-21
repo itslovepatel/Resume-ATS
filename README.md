@@ -11,7 +11,9 @@ A modern, AI-powered **ATS (Applicant Tracking System) Resume Analyzer** that he
 
 🔗 **[Try it Live →](https://resume-ats-frontend.vercel.app/)**
 
-![ATS Resume Analyzer](https://via.placeholder.com/800x400?text=ATS+Resume+Analyzer)
+<!-- Project preview / OG image (also used for social shares) -->
+![ATS Resume Analyzer Preview](./frontend/public/og-image.svg)
+
 
 ## ✨ What It Does
 
