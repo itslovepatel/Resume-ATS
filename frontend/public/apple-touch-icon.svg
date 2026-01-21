@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Background -->
+  <rect width="180" height="180" rx="40" fill="#3B82F6"/>
+  <!-- Document icon -->
+  <path d="M50 30h50l30 30v90a8 8 0 01-8 8H50a8 8 0 01-8-8V38a8 8 0 018-8z" fill="white"/>
+  <path d="M100 30v30h30" fill="none" stroke="#3B82F6" stroke-width="4"/>
+  <!-- Checkmark -->
+  <path d="M60 95l20 20 40-45" fill="none" stroke="#22C55E" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Score lines -->
+  <rect x="55" y="130" width="70" height="8" rx="4" fill="#3B82F6" opacity="0.4"/>
+  <rect x="55" y="145" width="45" height="8" rx="4" fill="#3B82F6" opacity="0.25"/>
+</svg>

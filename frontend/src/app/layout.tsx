@@ -43,6 +43,13 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'ATS Resume Analyzer - Free Resume Score & ATS Check',
     description: 'Upload your resume and get instant ATS compatibility score, skills analysis, and recruiter-level insights.',
+    images: ['/og-image.svg'],
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.svg',
   },
   category: 'Career Tools',
 };
@@ -55,7 +62,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
         <meta name="theme-color" content="#3B82F6" />
         <script
           type="application/ld+json"
