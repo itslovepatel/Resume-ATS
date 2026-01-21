@@ -22,6 +22,15 @@ export default function Footer() {
               how ATS systems read their resumes and provides actionable
               improvement insights.
             </p>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="inline-flex items-center gap-2 bg-gray-800 text-gray-200 px-3 py-1 rounded-full text-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 3h10l5 5v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="#9CA3AF" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 14l2 2 5-6" stroke="#10B981" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Local OCR fallback for scanned PDFs
+              </span>
+            </div>
             <div className="flex items-center gap-4">
               <a
                 href="https://github.com/itslovepatel"
