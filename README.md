@@ -1,6 +1,6 @@
 # 🎯 ATS Resume Analyzer
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge)](https://ats.lovexog.me)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge)](https://resume-ats-mu.vercel.app)
 [![Backend API](https://img.shields.io/badge/API-Render-blue?style=for-the-badge)](https://resume-ats-backend.onrender.com/)
 [![GitHub Stars](https://img.shields.io/github/stars/itslovepatel/Resume-ATS?style=for-the-badge)](https://github.com/itslovepatel/Resume-ATS)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
@@ -9,14 +9,14 @@
 
 A modern, AI-powered **ATS (Applicant Tracking System) Resume Analyzer** that helps job seekers understand how their resume performs in automated screening systems. **Supports 25+ industries** including Software, Healthcare, Finance, Legal, Education, and more!
 
-🔗 **[Try it Live →](https://resume-ats-frontend.vercel.app/)**
+🔗 **[Try it Live →](https://resume-ats-mu.vercel.app/)**
 
 <!-- Project preview / OG image (also used for social shares) -->
 ![ATS Resume Analyzer Preview](./frontend/public/og-image.svg)
 
 ## 🔗 Deployments
 
-- Primary frontend (Vercel): https://resume-ats-blue.vercel.app
+- Primary frontend (Vercel): https://resume-ats-mu.vercel.app
 - Alternate / vanity URL: https://ats.lovexog.me
 
 
