@@ -14,6 +14,12 @@ A modern, AI-powered **ATS (Applicant Tracking System) Resume Analyzer** that he
 <!-- Project preview / OG image (also used for social shares) -->
 ![ATS Resume Analyzer Preview](./frontend/public/og-image.svg)
 
+## 🔗 Deployments
+
+- Primary frontend (Vercel): https://resume-ats-blue.vercel.app
+- Alternate / vanity URL: https://ats.lovexog.me
+
+
 
 ## ✨ What It Does
 
@@ -54,6 +60,7 @@ Resume-ATS now includes a fully local OCR fallback to handle scanned or image-ba
 - The backend attempts standard PDF text extraction first (PyPDF). OCR runs only when extraction quality is poor (heuristics: text length < 800 chars, word count < 150, missing email or phone).
 - OCR uses Tesseract via `pytesseract` and `pdf2image` to convert pages at 300 DPI and preprocess images (grayscale, contrast, sharpening) before OCR.
 - Safety controls: max 5 OCR pages, 15s OCR timeout, never OCR DOCX, never store OCR images, never overwrite original PDFs.
+ - Safety controls: max 5 OCR pages, 30s OCR timeout, never OCR DOCX, never store OCR images, never overwrite original PDFs.
 - API responses include `parsing_method` ("standard" | "ocr" | "ocr_unavailable") and `ocr_confidence` ("low" | "medium" | "high").
 
 This makes Resume-ATS more robust for scanned resumes while keeping all processing local—no cloud OCR, no external APIs.
