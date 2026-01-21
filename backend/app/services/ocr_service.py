@@ -33,7 +33,7 @@ class OCRService:
     - Image preprocessing for better accuracy
     - Text cleanup and deduplication
     - Confidence scoring
-    - Hard timeout protection (15 seconds)
+    - Hard timeout protection (30 seconds)
     - Max 5 pages to prevent overload
     """
     
@@ -41,7 +41,7 @@ class OCRService:
     MIN_TEXT_LENGTH = 800
     MIN_WORD_COUNT = 150
     MAX_OCR_PAGES = 5
-    OCR_TIMEOUT_SECONDS = 15
+    OCR_TIMEOUT_SECONDS = 30
     OCR_DPI = 300
     
     # Email and phone patterns for quality detection
