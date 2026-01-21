@@ -1,6 +1,6 @@
 # 🎯 ATS Resume Analyzer
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge)](ats.lovexog.me)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge)](https://ats.lovexog.me)
 [![Backend API](https://img.shields.io/badge/API-Render-blue?style=for-the-badge)](https://resume-ats-backend.onrender.com/)
 [![GitHub Stars](https://img.shields.io/github/stars/itslovepatel/Resume-ATS?style=for-the-badge)](https://github.com/itslovepatel/Resume-ATS)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
