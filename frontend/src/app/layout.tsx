@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ATS Resume Analyzer - Free Resume Score & ATS Compatibility Check',
-  description: 'Upload your resume and get instant ATS compatibility score, skills analysis, and recruiter-level insights. Free AI-powered resume analyzer, no signup required.',
-  keywords: 'ATS resume checker, resume analyzer, ATS score, resume optimization, job search, career tools, free resume scanner, applicant tracking system, resume parser, CV analyzer, job application, resume tips, ATS friendly resume, resume keywords, resume score, free ATS checker, resume grader, job application tips, career advice, resume builder',
-  authors: [{ name: 'Love Patel', url: 'https://github.com/itslovepatel' }],
+  title: 'ATS Resume Analyzer - Free AI-Powered Resume Score & ATS Compatibility Check',
+  description: 'Upload your resume and get instant ATS compatibility score, skills analysis, and recruiter-level insights. Free AI-powered resume analyzer with zero data storage. Built with ❤️ for job seekers everywhere. No signup required, 100% open source.',
+  keywords: 'ATS resume checker, resume analyzer, ATS score, resume optimization, job search, career tools, free resume scanner, applicant tracking system, resume parser, CV analyzer, job application, resume tips, ATS friendly resume, resume keywords, resume score, free ATS checker, resume grader, job application tips, career advice, resume builder, AI resume analyzer, resume screening, job seeker tools, career optimization, resume feedback, interview preparation, job hunting, recruitment tools, HR technology, resume formatting, professional resume',
+  authors: [{ name: 'Love Patel', url: 'https://linkedin.com/in/love-patel-' }],
   creator: 'Love Patel',
   publisher: 'ATS Resume Analyzer',
-  metadataBase: new URL('https://resume-ats-frontend.vercel.app'),
+  metadataBase: new URL('https://ats.lovexog.me'),
   alternates: {
     canonical: '/',
   },
@@ -25,24 +25,24 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'ATS Resume Analyzer - See Your Resume Through an ATS Lens',
-    description: 'Get your free ATS score and actionable insights to improve your resume. AI-powered analysis for job seekers.',
+    description: 'Get your free ATS score and actionable insights. Zero data storage, 100% privacy-first, open source. Built with ❤️ for job seekers everywhere.',
     type: 'website',
     locale: 'en_US',
-    url: 'https://resume-ats-frontend.vercel.app',
+    url: 'https://ats.lovexog.me',
     siteName: 'ATS Resume Analyzer',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'ATS Resume Analyzer - Free Resume Score',
+        alt: 'ATS Resume Analyzer - Free AI-Powered Resume Score',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ATS Resume Analyzer - Free Resume Score & ATS Check',
-    description: 'Upload your resume and get instant ATS compatibility score, skills analysis, and recruiter-level insights.',
+    title: 'ATS Resume Analyzer - Free AI Resume Score & ATS Check',
+    description: 'Upload your resume and get instant ATS compatibility score. Zero data stored, blazingly fast, 100% open source. Built with ❤️ for job seekers.',
     images: ['/og-image.svg'],
   },
   icons: {
@@ -72,9 +72,15 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
               name: 'ATS Resume Analyzer',
-              description: 'Free AI-powered resume analyzer that helps job seekers understand how ATS systems read their resumes.',
+              description: 'Free AI-powered resume analyzer that helps job seekers understand how ATS systems read their resumes. Zero data storage, 100% privacy-first, open source.',
               applicationCategory: 'BusinessApplication',
               operatingSystem: 'Any',
+              url: 'https://ats.lovexog.me',
+              sameAs: [
+                'https://resume-ats-mu.vercel.app',
+                'https://github.com/itslovepatel/Resume-ATS',
+                'https://linkedin.com/in/love-patel-'
+              ],
               offers: {
                 '@type': 'Offer',
                 price: '0',
@@ -83,8 +89,23 @@ export default function RootLayout({
               author: {
                 '@type': 'Person',
                 name: 'Love Patel',
-                url: 'https://github.com/itslovepatel',
+                url: 'https://linkedin.com/in/love-patel-',
+                sameAs: [
+                  'https://github.com/itslovepatel',
+                  'https://linkedin.com/in/love-patel-'
+                ]
               },
+              featureList: [
+                'ATS Score Analysis',
+                'Skills Detection',
+                'Domain Classification',
+                'Experience Analysis',
+                'Project Review',
+                'Issue Detection',
+                'Smart Suggestions',
+                'PDF Report Generation'
+              ],
+              keywords: 'ATS, resume analyzer, resume score, job search, career tools'
             }),
           }}
         />

@@ -87,8 +87,16 @@ export default function Features() {
           </h2>
           <p className="section-subtitle max-w-2xl mx-auto">
             Our AI-powered analyzer examines every aspect of your resume to
-            provide recruiter-level insights.
+            provide recruiter-level insights. Blazingly fast, ridiculously accurate. ⚡
           </p>
+          {/* Tech Stack Badge */}
+          <div className="flex flex-wrap justify-center gap-2 mt-4">
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Next.js 14</span>
+            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">FastAPI</span>
+            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">AI/ML Powered</span>
+            <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">TypeScript</span>
+            <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium">Tailwind CSS</span>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

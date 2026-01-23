@@ -78,16 +78,29 @@ export default function Hero() {
           >
             <div className="flex items-center gap-2 text-gray-600">
               <CheckCircle2 className="w-5 h-5 text-success-500" />
-              <span className="text-sm font-medium">Used by recruiters</span>
+              <span className="text-sm font-medium">Blazingly Fast ⚡</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <Shield className="w-5 h-5 text-success-500" />
-              <span className="text-sm font-medium">ATS-friendly analysis</span>
+              <span className="text-sm font-medium">Zero Data Stored 🔒</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <Zap className="w-5 h-5 text-success-500" />
-              <span className="text-sm font-medium">No signup required</span>
+              <span className="text-sm font-medium">100% Open Source</span>
             </div>
+          </motion.div>
+
+          {/* Privacy Badge - Humorous */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-8 inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-200"
+          >
+            <Shield className="w-4 h-4 text-green-600" />
+            <span className="text-sm text-green-700 font-medium">
+              Your data? We literally can&apos;t afford the storage to keep it 😅
+            </span>
           </motion.div>
         </div>
 

@@ -19,9 +19,20 @@ export default function Footer() {
             </div>
             <p className="text-gray-400 max-w-md mb-4">
               Free AI-powered resume analyzer that helps job seekers understand
-              how ATS systems read their resumes and provides actionable
-              improvement insights.
+              how ATS systems read their resumes. Built with cutting-edge tech,
+              shipped with zero bloat. ⚡
             </p>
+            <p className="text-brand-400 font-medium mb-4">
+              Built with ❤️ for job seekers everywhere
+            </p>
+            {/* Privacy Notice - Sarcastic */}
+            <div className="bg-gray-800 rounded-lg p-3 mb-4 border border-gray-700">
+              <p className="text-green-400 text-sm font-medium mb-1">🔒 Zero Data Storage Policy</p>
+              <p className="text-gray-400 text-xs">
+                We don&apos;t store your resume data. Seriously, we couldn&apos;t even if we wanted to — 
+                have you seen cloud storage prices? 💸 Your privacy is safe simply because we&apos;re too broke to spy on you.
+              </p>
+            </div>
             <div className="flex items-center gap-2 mb-4">
               <span className="inline-flex items-center gap-2 bg-gray-800 text-gray-200 px-3 py-1 rounded-full text-sm">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -31,15 +42,24 @@ export default function Footer() {
                 Local OCR fallback for scanned PDFs
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-3">
               <a
-                href="https://github.com/itslovepatel"
+                href="https://github.com/itslovepatel/Resume-ATS"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
               >
                 <Github className="w-5 h-5" />
                 <span>Open Source on GitHub</span>
+              </a>
+              <a
+                href="https://linkedin.com/in/love-patel-"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+              >
+                <Linkedin className="w-5 h-5" />
+                <span>Connect on LinkedIn</span>
               </a>
             </div>
           </div>
@@ -117,13 +137,22 @@ export default function Footer() {
               <Mail className="w-5 h-5" />
             </a>
             <a
-              href="https://github.com/itslovepatel"
+              href="https://github.com/itslovepatel/Resume-ATS"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-white transition-colors"
-              title="GitHub"
+              title="GitHub - Open Source"
             >
               <Github className="w-5 h-5" />
+            </a>
+            <a
+              href="https://linkedin.com/in/love-patel-"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-white transition-colors"
+              title="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
             </a>
           </div>
         </div>
